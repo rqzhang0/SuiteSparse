@@ -656,8 +656,8 @@ cs_cld *cs_cl_ddone (cs_cld *D, cs_cl *C, void *w, cs_long_t ok) ;
 #define CS_UNFLIP(i) (((i) < 0) ? CS_FLIP(i) : (i))
 #define CS_MARKED(w,j) (w [j] < 0)
 #define CS_MARK(w,j) { w [j] = CS_FLIP (w [j]) ; }
-#define CS_CSC(A) (A && (A->nz == -1))
-#define CS_TRIPLET(A) (A && (A->nz >= 0))
+#define CS_CSC(A) (A && (A->nz == -1)) // A不是null且nz等于-1,这种判断指针是否为空的办法在c++中行不通
+#define CS_TRIPLET(A) (A && (A->nz >= 0)) // A 不是null且nz等于0
 
 /* --- primary CSparse routines and data structures ------------------------- */
 
