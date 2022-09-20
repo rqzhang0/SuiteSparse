@@ -1,5 +1,5 @@
 #include "cs.h"
-//C_*j=\sum_k A_*k B_kj
+//C_*j= A_*k B_kj
 //x代表的是C_*j，不直接存储到C矩阵中的原因是不知道非零元结构,稀疏矩阵的存储方式不好离散访存
 //beta是B_kj
 /* x = x + beta * A(:,j), where x is a dense vector and A(:,j) is sparse */
