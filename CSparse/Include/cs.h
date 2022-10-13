@@ -143,10 +143,10 @@ csn *cs_ndone (csn *N, cs *C, void *w, void *x, csi ok) ;
 
 #define CS_MAX(a,b) (((a) > (b)) ? (a) : (b))
 #define CS_MIN(a,b) (((a) < (b)) ? (a) : (b))
-#define CS_FLIP(i) (-(i)-2)
-#define CS_UNFLIP(i) (((i) < 0) ? CS_FLIP(i) : (i))
-#define CS_MARKED(w,j) (w [j] < 0)
-#define CS_MARK(w,j) { w [j] = CS_FLIP (w [j]) ; }
-#define CS_CSC(A) (A && (A->nz == -1))
-#define CS_TRIPLET(A) (A && (A->nz >= 0))
+#define CS_FLIP(i) (-(i)-2)//将节点i转化为标记后的序号, 标记的序号转换为未标记的序号,(翻转), 如果i为-1,则为空
+#define CS_UNFLIP(i) (((i) < 0) ? CS_FLIP(i) : (i)) //小于零则翻转，否则不翻转, 输出结果为>=0
+#define CS_MARKED(w,j) (w [j] < 0) //通过w[j]是否小于零判断是否被标记
+#define CS_MARK(w,j) { w [j] = CS_FLIP (w [j]) ; } //将w[j]的内容进行翻转  
+#define CS_CSC(A) (A && (A->nz == -1))//判断矩阵A是否为压缩模式，且矩阵是否为空，正常则返回true
+#define CS_TRIPLET(A) (A && (A->nz >= 0)) //大于零则为三元法存储,且同时判断A是否为空
 #endif

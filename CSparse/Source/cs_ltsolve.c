@@ -6,7 +6,7 @@ csi cs_ltsolve (const cs *L, double *x)
     double *Lx ;
     if (!CS_CSC (L) || !x) return (0) ;                     /* check inputs */
     n = L->n ; Lp = L->p ; Li = L->i ; Lx = L->x ;
-    for (j = n-1 ; j >= 0 ; j--)
+    for (j = n-1 ; j >= 0 ; j--)  /* x_j=x_j-L_ij*xi		*/
     {
         for (p = Lp [j]+1 ; p < Lp [j+1] ; p++)
         {
