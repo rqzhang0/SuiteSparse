@@ -169,7 +169,7 @@ void mexFunction
 
     if (!colamd_l (n_row, n_col, Alen, A, p, knobs, stats))
     {
-	colamd_l_report (stats) ;
+  //colamd_l_report (stats) ;
 	mexErrMsgTxt ("colamd error!") ;
     }
     mxFree (A) ;
@@ -188,10 +188,10 @@ void mexFunction
     /* === Return the stats vector ========================================== */
 
     /* print stats if spumoni is set */
-    if (spumoni)
-    {
-	colamd_l_report (stats) ;
-    }
+    // if (spumoni)
+    // {
+	// colamd_l_report (stats) ;
+    // }
 
     if (nlhs == 2)
     {

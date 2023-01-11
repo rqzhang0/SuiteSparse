@@ -147,7 +147,7 @@ void mexFunction
 
     if (!symamd_l (n_col, A, p, perm, knobs, stats, &mxCalloc, &mxFree))
     {
-	symamd_l_report (stats) ;
+	// symamd_l_report (stats) ;
 	mexErrMsgTxt ("symamd error!") ;
     }
 
@@ -170,10 +170,10 @@ void mexFunction
     /* === Return the stats vector ========================================== */
 
     /* print stats if spumoni is set */
-    if (spumoni)
-    {
-	symamd_l_report (stats) ;
-    }
+  //  if (spumoni)
+   // {
+	//symamd_l_report (stats) ;
+   // }
 
     if (nlhs == 2)
     {
