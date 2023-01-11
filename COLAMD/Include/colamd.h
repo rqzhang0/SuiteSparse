@@ -150,10 +150,10 @@ void colamd_set_defaults	/* sets default parameters */
     double knobs [COLAMD_KNOBS]	/* parameter settings for colamd */
 ) ;
 
-void colamd_l_set_defaults	/* sets default parameters */
-(				/* knobs argument is modified on output */
-    double knobs [COLAMD_KNOBS]	/* parameter settings for colamd */
-) ;
+// void colamd_l_set_defaults	/* sets default parameters */
+// (				/* knobs argument is modified on output */
+//     double knobs [COLAMD_KNOBS]	/* parameter settings for colamd */
+// ) ;
 
 int colamd			/* returns (1) if successful, (0) otherwise*/
 (				/* A and p arguments are modified on output */

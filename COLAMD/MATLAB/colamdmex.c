@@ -84,7 +84,7 @@ void mexFunction
 
     /* === Get knobs ======================================================== */
 
-    colamd_l_set_defaults (knobs) ;
+    // colamd_l_set_defaults (knobs) ;
     spumoni = 0 ;
 
     /* check for user-passed knobs */
