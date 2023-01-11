@@ -1,4 +1,5 @@
 # Ignore these files:
+.vscode
 *.o
 *.so.*
 *.so
