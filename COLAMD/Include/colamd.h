@@ -210,27 +210,6 @@ SuiteSparse_long symamd_l               /* return (1) if OK, (0) otherwise */
     					/* mxFree (for MATLAB mexFunction) */
 ) ;
 
-/*
-void colamd_report
-(
-    int stats [COLAMD_STATS]
-) ;
-
-void colamd_l_report
-(
-    SuiteSparse_long stats [COLAMD_STATS]
-) ;
-
-void symamd_report
-(
-    int stats [COLAMD_STATS]
-) ;
-
-void symamd_l_report
-(
-    SuiteSparse_long stats [COLAMD_STATS]
-) ;
-*/
 
 
 #ifdef __cplusplus

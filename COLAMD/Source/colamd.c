@@ -3,7 +3,7 @@
 #define NDEBUG
 #endif
 
-
+#include <assert.h>
 #include "colamd.h"
 #include <limits.h>
 #include <math.h>
@@ -192,10 +192,6 @@ PRIVATE void order_children
 PRIVATE void detect_super_cols
 (
 
-#ifndef NDEBUG
-    Int n_col,
-    Colamd_Row Row [],
-#endif 
 
     Colamd_Col Col [],
     Int A [],
@@ -223,24 +219,10 @@ PRIVATE Int clear_mark
 ) ;
 
 
-#ifndef NDEBUG
-
-#include <assert.h>
 
 
-PRIVATE Int colamd_debug = 0 ;	
 
-#define DEBUG0(params) { SUITESPARSE_PRINTF (params) ; }
-#define DEBUG1(params) { if (colamd_debug >= 1) SUITESPARSE_PRINTF (params) ; }
-#define DEBUG2(params) { if (colamd_debug >= 2) SUITESPARSE_PRINTF (params) ; }
-#define DEBUG3(params) { if (colamd_debug >= 3) SUITESPARSE_PRINTF (params) ; }
-#define DEBUG4(params) { if (colamd_debug >= 4) SUITESPARSE_PRINTF (params) ; }
-
-#ifdef MATLAB_MEX_FILE
-#define ASSERT(expression) (mxAssert ((expression), ""))
-#else
 #define ASSERT(expression) (assert (expression))
-#endif 
 
 PRIVATE void colamd_get_debug	
 (
@@ -286,17 +268,14 @@ PRIVATE void debug_structures
     Int n_col2
 ) ;
 
-#else 
-
 #define DEBUG0(params) ;
 #define DEBUG1(params) ;
 #define DEBUG2(params) ;
 #define DEBUG3(params) ;
 #define DEBUG4(params) ;
 
-#define ASSERT(expression)
+// #define ASSERT(expression)
 
-#endif 
 
 
 static size_t t_add (size_t a, size_t b, int *ok)
@@ -399,9 +378,6 @@ PUBLIC Int SYMAMD_MAIN
     double cknobs [COLAMD_KNOBS] ;		
     double default_knobs [COLAMD_KNOBS] ;	
 
-#ifndef NDEBUG
-    colamd_get_debug ("symamd") ;
-#endif 
 
     if (!stats)
     {
@@ -660,15 +636,12 @@ Int COLAMD_MAIN
     Int aggressive ;		
     int ok ;
 
-// #ifndef NDEBUG
-//     colamd_get_debug ("colamd") ;
-// #endif 
 
-    // if (!stats)
-    // {
-	// DEBUG0 (("colamd: stats not present\n")) ;
-	// return (FALSE) ;
-    // }
+    if (!stats)
+    {
+	DEBUG0 (("colamd: stats not present\n")) ;
+	return (FALSE) ;
+    }
     for (i = 0 ; i < COLAMD_STATS ; i++)
     {
 	stats [i] = 0 ;
@@ -927,25 +900,6 @@ PRIVATE Int init_rows_cols
     {
     	DEBUG0 (("colamd: reconstructing column form, matrix jumbled\n")) ;
 
-#ifndef NDEBUG
-	for (col = 0 ; col < n_col ; col++)
-	{
-	    p [col] = Col [col].length ;
-	}
-	for (row = 0 ; row < n_row ; row++)
-	{
-	    rp = &A [Row [row].start] ;
-	    rp_end = rp + Row [row].length ;
-	    while (rp < rp_end)
-	    {
-		p [*rp++]-- ;
-	    }
-	}
-	for (col = 0 ; col < n_col ; col++)
-	{
-	    ASSERT (p [col] == 0) ;
-	}
-#endif 
 
 	Col [0].start = 0 ;
 	p [0] = Col [0].start ;
@@ -1001,9 +955,6 @@ PRIVATE void init_scoring
     Int max_deg ;		
     Int next_col ;		
 
-#ifndef NDEBUG
-    Int debug_count ;		
-#endif 
 
     if (knobs [COLAMD_DENSE_ROW] < 0)
     {
@@ -1116,13 +1067,7 @@ PRIVATE void init_scoring
     	n_col-n_col2)) ;
 
 
-#ifndef NDEBUG
-    debug_structures (n_row, n_col, Row, Col, A, n_col2) ;
-#endif 
 
-#ifndef NDEBUG
-    debug_count = 0 ;
-#endif 
 
     for (c = 0 ; c <= n_col ; c++)
     {
@@ -1156,18 +1101,9 @@ PRIVATE void init_scoring
 
 	    min_score = MIN (min_score, score) ;
 
-#ifndef NDEBUG
-	    debug_count++ ;
-#endif 
 	}
     }
 
-#ifndef NDEBUG
-    DEBUG1 (("colamd: Live cols %d out of %d, non-princ: %d\n",
-	debug_count, n_col, n_col-debug_count)) ;
-    ASSERT (debug_count == n_col2) ;
-    debug_deg_lists (n_row, n_col, Row, Col, head, min_score, n_col2, max_deg) ;
-#endif 
 
     *p_n_col2 = n_col2 ;
     *p_n_row2 = n_row2 ;
@@ -1224,11 +1160,6 @@ PRIVATE Int find_ordering
     Int next_col ;		
     Int ngarbage ;		
 
-#ifndef NDEBUG
-    Int debug_d ;		
-    Int debug_step = 0 ;	
-#endif 
-
     max_mark = INT_MAX - n_col ;	
     tag_mark = clear_mark (0, max_mark, n_row, Row) ;
     min_score = 0 ;
@@ -1238,31 +1169,10 @@ PRIVATE Int find_ordering
     for (k = 0 ; k < n_col2 ; )
     {
 
-#ifndef NDEBUG
-	if (debug_step % 100 == 0)
-	{
-	    DEBUG2 (("\n...       Step k: %d out of n_col2: %d\n", k, n_col2)) ;
-	}
-	else
-	{
-	    DEBUG3 (("\n----------Step k: %d out of n_col2: %d\n", k, n_col2)) ;
-	}
-	debug_step++ ;
-	debug_deg_lists (n_row, n_col, Row, Col, head,
-		min_score, n_col2-k, max_deg) ;
-	debug_matrix (n_row, n_col, Row, Col, A) ;
-#endif 
 
 	ASSERT (min_score >= 0) ;
 	ASSERT (min_score <= n_col) ;
 	ASSERT (head [min_score] >= EMPTY) ;
-
-#ifndef NDEBUG
-	for (debug_d = 0 ; debug_d < min_score ; debug_d++)
-	{
-	    ASSERT (head [debug_d] == EMPTY) ;
-	}
-#endif 
 
 	while (head [min_score] == EMPTY && min_score < n_col)
 	{
@@ -1296,9 +1206,6 @@ PRIVATE Int find_ordering
 	    ASSERT (pfree + needed_memory < Alen) ;
 	    tag_mark = clear_mark (0, max_mark, n_row, Row) ;
 
-#ifndef NDEBUG
-	    debug_matrix (n_row, n_col, Row, Col, A) ;
-#endif 
 	}
 
 	pivot_row_start = pfree ;
@@ -1334,11 +1241,6 @@ PRIVATE Int find_ordering
 
 	Col [pivot_col].shared1.thickness = pivot_col_thickness ;
 	max_deg = MAX (max_deg, pivot_row_degree) ;
-
-#ifndef NDEBUG
-	DEBUG3 (("check2\n")) ;
-	debug_mark (n_row, Row, tag_mark, max_mark) ;
-#endif 
 
 	cp = &A [Col [pivot_col].start] ;
 	cp_end = cp + Col [pivot_col].length ;
@@ -1429,11 +1331,6 @@ PRIVATE Int find_ordering
 	    }
 	}
 
-#ifndef NDEBUG
-	debug_deg_lists (n_row, n_col, Row, Col, head,
-		min_score, n_col2-k-pivot_row_degree, max_deg) ;
-#endif 
-
 	DEBUG3 (("** Adding set differences phase. **\n")) ;
 	rp = &A [pivot_row_start] ;
 	rp_end = rp + pivot_row_length ;
@@ -1512,9 +1409,6 @@ PRIVATE Int find_ordering
 
 	detect_super_cols (
 
-#ifndef NDEBUG
-		n_col, Row,
-#endif 
 
 		Col, A, head, pivot_row_start, pivot_row_length) ;
 
@@ -1522,10 +1416,6 @@ PRIVATE Int find_ordering
 
 	tag_mark = clear_mark (tag_mark+max_deg+1, max_mark, n_row, Row) ;
 
-#ifndef NDEBUG
-	DEBUG3 (("check3\n")) ;
-	debug_mark (n_row, Row, tag_mark, max_mark) ;
-#endif 
 
 	DEBUG3 (("** Finalize scores phase. **\n")) ;
 
@@ -1569,11 +1459,6 @@ PRIVATE Int find_ordering
 
 	    min_score = MIN (min_score, cur_score) ;
 	}
-
-#ifndef NDEBUG
-	debug_deg_lists (n_row, n_col, Row, Col, head,
-		min_score, n_col2-k, max_deg) ;
-#endif 
 
 	if (pivot_row_degree > 0)
 	{
@@ -1645,11 +1530,6 @@ PRIVATE void order_children
 
 PRIVATE void detect_super_cols
 (
-
-#ifndef NDEBUG
-    Int n_col,			
-    Colamd_Row Row [],		
-#endif 
 
     Colamd_Col Col [],		
     Int A [],			
@@ -1780,13 +1660,6 @@ PRIVATE Int garbage_collection
     Int c ;			
     Int length ;		
 
-#ifndef NDEBUG
-    Int debug_rows ;
-    DEBUG2 (("Defrag..\n")) ;
-    for (psrc = &A[0] ; psrc < pfree ; psrc++) ASSERT (*psrc >= 0) ;
-    debug_rows = 0 ;
-#endif 
-
     pdest = &A[0] ;
     for (c = 0 ; c < n_col ; c++)
     {
@@ -1821,9 +1694,6 @@ PRIVATE Int garbage_collection
 	    Row [r].shared2.first_column = *psrc ;
 	    ASSERT (ROW_IS_ALIVE (r)) ;
 	    *psrc = ONES_COMPLEMENT (r) ;
-#ifndef NDEBUG
-	    debug_rows++ ;
-#endif 
 	}
     }
 
@@ -1851,9 +1721,6 @@ PRIVATE Int garbage_collection
 	    }
 	    Row [r].length = (Int) (pdest - &A [Row [r].start]) ;
 	    ASSERT (Row [r].length > 0) ;
-#ifndef NDEBUG
-	    debug_rows-- ;
-#endif 
 	}
     }
     ASSERT (debug_rows == 0) ;
@@ -1888,249 +1755,3 @@ PRIVATE Int clear_mark
 
     return (tag_mark) ;
 }
-
-
-#ifndef NDEBUG
-
-PRIVATE void debug_structures
-(
-
-    Int n_row,
-    Int n_col,
-    Colamd_Row Row [],
-    Colamd_Col Col [],
-    Int A [],
-    Int n_col2
-)
-{
-    Int i ;
-    Int c ;
-    Int *cp ;
-    Int *cp_end ;
-    Int len ;
-    Int score ;
-    Int r ;
-    Int *rp ;
-    Int *rp_end ;
-    Int deg ;
-
-    for (c = 0 ; c < n_col ; c++)
-    {
-	if (COL_IS_ALIVE (c))
-	{
-	    len = Col [c].length ;
-	    score = Col [c].shared2.score ;
-	    DEBUG4 (("initial live col %5d %5d %5d\n", c, len, score)) ;
-	    ASSERT (len > 0) ;
-	    ASSERT (score >= 0) ;
-	    ASSERT (Col [c].shared1.thickness == 1) ;
-	    cp = &A [Col [c].start] ;
-	    cp_end = cp + len ;
-	    while (cp < cp_end)
-	    {
-		r = *cp++ ;
-		ASSERT (ROW_IS_ALIVE (r)) ;
-	    }
-	}
-	else
-	{
-	    i = Col [c].shared2.order ;
-	    ASSERT (i >= n_col2 && i < n_col) ;
-	}
-    }
-
-    for (r = 0 ; r < n_row ; r++)
-    {
-	if (ROW_IS_ALIVE (r))
-	{
-	    i = 0 ;
-	    len = Row [r].length ;
-	    deg = Row [r].shared1.degree ;
-	    ASSERT (len > 0) ;
-	    ASSERT (deg > 0) ;
-	    rp = &A [Row [r].start] ;
-	    rp_end = rp + len ;
-	    while (rp < rp_end)
-	    {
-		c = *rp++ ;
-		if (COL_IS_ALIVE (c))
-		{
-		    i++ ;
-		}
-	    }
-	    ASSERT (i > 0) ;
-	}
-    }
-}
-
-
-PRIVATE void debug_deg_lists
-(
-
-    Int n_row,
-    Int n_col,
-    Colamd_Row Row [],
-    Colamd_Col Col [],
-    Int head [],
-    Int min_score,
-    Int should,
-    Int max_deg
-)
-{
-
-    Int deg ;
-    Int col ;
-    Int have ;
-    Int row ;
-
-    if (n_col > 10000 && colamd_debug <= 0)
-    {
-	return ;
-    }
-    have = 0 ;
-    DEBUG4 (("Degree lists: %d\n", min_score)) ;
-    for (deg = 0 ; deg <= n_col ; deg++)
-    {
-	col = head [deg] ;
-	if (col == EMPTY)
-	{
-	    continue ;
-	}
-	DEBUG4 (("%d:", deg)) ;
-	while (col != EMPTY)
-	{
-	    DEBUG4 ((" %d", col)) ;
-	    have += Col [col].shared1.thickness ;
-	    ASSERT (COL_IS_ALIVE (col)) ;
-	    col = Col [col].shared4.degree_next ;
-	}
-	DEBUG4 (("\n")) ;
-    }
-    DEBUG4 (("should %d have %d\n", should, have)) ;
-    ASSERT (should == have) ;
-
-
-    if (n_row > 10000 && colamd_debug <= 0)
-    {
-	return ;
-    }
-    for (row = 0 ; row < n_row ; row++)
-    {
-	if (ROW_IS_ALIVE (row))
-	{
-	    ASSERT (Row [row].shared1.degree <= max_deg) ;
-	}
-    }
-}
-
-
-
-
-PRIVATE void debug_mark
-(
-
-    Int n_row,
-    Colamd_Row Row [],
-    Int tag_mark,
-    Int max_mark
-)
-{
-
-    Int r ;
-
-
-    ASSERT (tag_mark > 0 && tag_mark <= max_mark) ;
-    if (n_row > 10000 && colamd_debug <= 0)
-    {
-	return ;
-    }
-    for (r = 0 ; r < n_row ; r++)
-    {
-	ASSERT (Row [r].shared2.mark < tag_mark) ;
-    }
-}
-
-
-
-
-PRIVATE void debug_matrix
-(
-    Int n_row,
-    Int n_col,
-    Colamd_Row Row [],
-    Colamd_Col Col [],
-    Int A []
-)
-{
-    Int r ;
-    Int c ;
-    Int *rp ;
-    Int *rp_end ;
-    Int *cp ;
-    Int *cp_end ;
-
-    if (colamd_debug < 3)
-    {
-	return ;
-    }
-    DEBUG3 (("DUMP MATRIX:\n")) ;
-    for (r = 0 ; r < n_row ; r++)
-    {
-	DEBUG3 (("Row %d alive? %d\n", r, ROW_IS_ALIVE (r))) ;
-	if (ROW_IS_DEAD (r))
-	{
-	    continue ;
-	}
-	DEBUG3 (("start %d length %d degree %d\n",
-		Row [r].start, Row [r].length, Row [r].shared1.degree)) ;
-	rp = &A [Row [r].start] ;
-	rp_end = rp + Row [r].length ;
-	while (rp < rp_end)
-	{
-	    c = *rp++ ;
-	    DEBUG4 (("	%d col %d\n", COL_IS_ALIVE (c), c)) ;
-	}
-    }
-
-    for (c = 0 ; c < n_col ; c++)
-    {
-	DEBUG3 (("Col %d alive? %d\n", c, COL_IS_ALIVE (c))) ;
-	if (COL_IS_DEAD (c))
-	{
-	    continue ;
-	}
-	DEBUG3 (("start %d length %d shared1 %d shared2 %d\n",
-		Col [c].start, Col [c].length,
-		Col [c].shared1.thickness, Col [c].shared2.score)) ;
-	cp = &A [Col [c].start] ;
-	cp_end = cp + Col [c].length ;
-	while (cp < cp_end)
-	{
-	    r = *cp++ ;
-	    DEBUG4 (("	%d row %d\n", ROW_IS_ALIVE (r), r)) ;
-	}
-    }
-}
-
-PRIVATE void colamd_get_debug
-(
-    char *method
-)
-{
-    FILE *f ;
-    colamd_debug = 0 ;		
-    f = fopen ("debug", "r") ;
-    if (f == (FILE *) NULL)
-    {
-	colamd_debug = 0 ;
-    }
-    else
-    {
-	fscanf (f, "%d", &colamd_debug) ;
-	fclose (f) ;
-    }
-    DEBUG0 (("%s: debug version, D = %d (THIS WILL BE SLOW!)\n",
-    	method, colamd_debug)) ;
-}
-
-#endif 
