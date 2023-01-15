@@ -134,6 +134,15 @@ typedef struct Colamd_Row_struct
 #define KILL_PRINCIPAL_COL(c)		{ Col [c].start = DEAD_PRINCIPAL ; }
 #define KILL_NON_PRINCIPAL_COL(c)	{ Col [c].start = DEAD_NON_PRINCIPAL ; }
 
+#define ASSERT(expression) (assert (expression))
+
+//throw error
+#define DEBUG0(params) ;
+#define DEBUG1(params) ;
+#define DEBUG2(params) ;
+#define DEBUG3(params) ;
+#define DEBUG4(params) ;
+
 
 #if defined (MATLAB_MEX_FILE) || defined (MATHWORKS)
 #define INDEX(i) ((i)+1)
@@ -222,8 +231,6 @@ PRIVATE Int clear_mark
 
 
 
-#define ASSERT(expression) (assert (expression))
-
 PRIVATE void colamd_get_debug	
 (
     char *method
@@ -267,15 +274,6 @@ PRIVATE void debug_structures
     Int A [],
     Int n_col2
 ) ;
-
-#define DEBUG0(params) ;
-#define DEBUG1(params) ;
-#define DEBUG2(params) ;
-#define DEBUG3(params) ;
-#define DEBUG4(params) ;
-
-// #define ASSERT(expression)
-
 
 
 static size_t t_add (size_t a, size_t b, int *ok)
@@ -650,42 +648,42 @@ Int COLAMD_MAIN
     stats [COLAMD_INFO1] = -1 ;
     stats [COLAMD_INFO2] = -1 ;
 
-    // if (!A)		
-    // {
-	// stats [COLAMD_STATUS] = COLAMD_ERROR_A_not_present ;
-	// DEBUG0 (("colamd: A not present\n")) ;
-	// return (FALSE) ;
-    // }
+    if (!A)		
+    {
+	stats [COLAMD_STATUS] = COLAMD_ERROR_A_not_present ;
+	DEBUG0 (("colamd: A not present\n")) ;
+	return (FALSE) ;
+    }
 
-    // if (!p)		
-    // {
-	// stats [COLAMD_STATUS] = COLAMD_ERROR_p_not_present ;
-	// DEBUG0 (("colamd: p not present\n")) ;
-    // 	return (FALSE) ;
-    // }
+    if (!p)		
+    {
+	stats [COLAMD_STATUS] = COLAMD_ERROR_p_not_present ;
+	DEBUG0 (("colamd: p not present\n")) ;
+    	return (FALSE) ;
+    }
 
-    // if (n_row < 0)	
-    // {
-	// stats [COLAMD_STATUS] = COLAMD_ERROR_nrow_negative ;
-	// stats [COLAMD_INFO1] = n_row ;
-	// DEBUG0 (("colamd: nrow negative %d\n", n_row)) ;
-    // 	return (FALSE) ;
-    // }
+    if (n_row < 0)	
+    {
+	stats [COLAMD_STATUS] = COLAMD_ERROR_nrow_negative ;
+	stats [COLAMD_INFO1] = n_row ;
+	DEBUG0 (("colamd: nrow negative %d\n", n_row)) ;
+    	return (FALSE) ;
+    }
 
-    // if (n_col < 0)	
-    // {
-	// stats [COLAMD_STATUS] = COLAMD_ERROR_ncol_negative ;
-	// stats [COLAMD_INFO1] = n_col ;
-	// DEBUG0 (("colamd: ncol negative %d\n", n_col)) ;
-    // 	return (FALSE) ;
-    // }
+    if (n_col < 0)	
+    {
+	stats [COLAMD_STATUS] = COLAMD_ERROR_ncol_negative ;
+	stats [COLAMD_INFO1] = n_col ;
+	DEBUG0 (("colamd: ncol negative %d\n", n_col)) ;
+    	return (FALSE) ;
+    }
 
     nnz = p [n_col] ;
     if (nnz < 0)	
     {
 	stats [COLAMD_STATUS] = COLAMD_ERROR_nnz_negative ;
 	stats [COLAMD_INFO1] = nnz ;
-	// DEBUG0 (("colamd: number of entries negative %d\n", nnz)) ;
+	DEBUG0 (("colamd: number of entries negative %d\n", nnz)) ;
 	return (FALSE) ;
     }
 
@@ -693,7 +691,7 @@ Int COLAMD_MAIN
     {
 	stats [COLAMD_STATUS] = COLAMD_ERROR_p0_nonzero	;
 	stats [COLAMD_INFO1] = p [0] ;
-	// DEBUG0 (("colamd: p[0] not zero %d\n", p [0])) ;
+	DEBUG0 (("colamd: p[0] not zero %d\n", p [0])) ;
 	return (FALSE) ;
     }
 
@@ -720,7 +718,7 @@ Int COLAMD_MAIN
 	stats [COLAMD_STATUS] = COLAMD_ERROR_A_too_small ;
 	stats [COLAMD_INFO1] = need ;
 	stats [COLAMD_INFO2] = Alen ;
-	// DEBUG0 (("colamd: Need Alen >= %d, given only Alen = %d\n", need,Alen));
+	DEBUG0 (("colamd: Need Alen >= %d, given only Alen = %d\n", need,Alen));
 	return (FALSE) ;
     }
 
@@ -730,7 +728,7 @@ Int COLAMD_MAIN
 
     if (!init_rows_cols (n_row, n_col, Row, Col, A, p, stats))
     {
-	// DEBUG0 (("colamd: Matrix invalid\n")) ;
+	DEBUG0 (("colamd: Matrix invalid\n")) ;
 	return (FALSE) ;
     }
 
@@ -746,7 +744,7 @@ Int COLAMD_MAIN
     stats [COLAMD_DENSE_ROW] = n_row - n_row2 ;
     stats [COLAMD_DENSE_COL] = n_col - n_col2 ;
     stats [COLAMD_DEFRAG_COUNT] = ngarbage ;
-    // DEBUG0 (("colamd: done.\n")) ; 
+    DEBUG0 (("colamd: done.\n")) ; 
     return (TRUE) ;
 }
 
@@ -1564,7 +1562,7 @@ PRIVATE void detect_super_cols
 	}
 
 	hash = Col [col].shared3.hash ;
-	ASSERT (hash <= n_col) ;
+	// ASSERT (hash <= n_col) ;
 
 	head_column = head [hash] ;
 	if (head_column > EMPTY)
@@ -1723,8 +1721,7 @@ PRIVATE Int garbage_collection
 	    ASSERT (Row [r].length > 0) ;
 	}
     }
-    ASSERT (debug_rows == 0) ;
-
+    // ASSERT (debug_rows == 0) ;
     return ((Int) (pdest - &A [0])) ;
 }
 
