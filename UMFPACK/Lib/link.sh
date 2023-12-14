@@ -1,0 +1,1 @@
+g++ -shared -o mylibrary.so umf_i_colamd.o -L/home/rh/CODE/SuiteSparse/lib -L/usr/lib/x86_64-linux-gnu/blas -L/usr/lib/x86_64-linux-gnu/lapack -L/home/rh/CODE/SuiteSparse/SuiteSparse_config -lamd -lsuitesparseconfig -lccolamd -lcamd -lmetis -lrt -lcholmod -lm -lcolam^C-lblas -llapack
